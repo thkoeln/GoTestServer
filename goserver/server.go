@@ -33,7 +33,7 @@ func main() {
 	p2, _ := loadPage("TestPage")
 	fmt.Println(string(p2.Body))*/
 	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe("*:8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 
 }
 
