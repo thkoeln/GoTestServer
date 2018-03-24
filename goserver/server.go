@@ -7,16 +7,19 @@ import (
 	"net/http"
 )
 
+//Defines a Webpage with a Title and a Body
 type Page struct {
 	Title string
 	Body  []byte
 }
 
+//Saves a given Page to a TXT-Document
 func (p *Page) save() error {
 	filename := p.Title + ".txt"
 	return ioutil.WriteFile(filename, p.Body, 0600)
 }
 
+//Loads a given Page by Name from a TXT-Document
 func loadPage(title string) (*Page, error) {
 	filename := title + ".txt"
 	body, err := ioutil.ReadFile(filename)
@@ -26,13 +29,34 @@ func loadPage(title string) (*Page, error) {
 	return &Page{Title: title, Body: body}, nil
 }
 
+//Handles all view requests after /view/, offers the TXT-Document as HTML
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/view/"):]
 	p, _ := loadPage(title)
 	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
 }
 
+//Handles all requests after /edit/, offers a form to the HTTPClient
+func editHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.URL.Path[len("/edit/"):]
+	p, err := loadPage(title)
+	if err != nil {
+		p = &Page{Title: title}
+	}
+	fmt.Fprintf(w, "<h1>Editing %s</h1>"+
+		"<form action=\"/save/%s\" method=\"POST\">"+
+		"<textarea name=\"body\">%s</textarea><br>"+
+		"<input type=\"submit\" value=\"Save\">"+
+		"</form>",
+		p.Title, p.Title, p.Body)
+}
+
+//Entry Point for the Caller
 func main() {
 	http.HandleFunc("/view/", viewHandler)
+	http.HandleFunc("/edit/", editHandler)
+
+	//Not jet implemented
+	//http.HandleFunc("/save/", saveHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
