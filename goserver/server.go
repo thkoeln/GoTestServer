@@ -46,7 +46,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "edit", p)
 }
 
-//Renders the Webpage from a given femplate file
+//Renders the Webpage from a given template file
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	t, _ := template.ParseFiles(tmpl + ".html")
 	t.Execute(w, p)
