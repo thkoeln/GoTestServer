@@ -51,6 +51,14 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "edit", p)
 }
 
+func saveHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.URL.Path[len("/save/"):]
+	body := r.FormValue("body")
+	p := &Page{Title: title, Body: []byte(body)}
+	p.save()
+	http.Redirect(w, r, "/view/"+title, http.StatusFound)
+}
+
 //Renders the Webpage from a given template file
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	t, _ := template.ParseFiles(tmpl + ".html")
@@ -64,5 +72,6 @@ func main() {
 
 	//Not jet implemented
 	//http.HandleFunc("/save/", saveHandler)
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
