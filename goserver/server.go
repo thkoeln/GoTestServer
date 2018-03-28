@@ -32,7 +32,12 @@ func loadPage(title string) (*Page, error) {
 //Handles all view requests after /view/, offers the TXT-Document as HTML
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/view/"):]
-	p, _ := loadPage(title)
+	p, err := loadPage(title)
+	//Redirects non-existing pages to th edit site:
+	if err != nil {
+		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
+		return
+	}
 	renderTemplate(w, "view", p)
 }
 
